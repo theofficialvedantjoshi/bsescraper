@@ -1,11 +1,14 @@
 ### BSE Scraper Documentation
 
+
 **Version:** 1.0.5  
 **Description:** A Python library to scrape data from the BSE India website
 #### Get Started
 
-1. **`CLASS: BSE()`**
-   - **Example:** 
+1. **`Installation`**
+   -     pip install bsescraper==1.0.5
+
+3. **`CLASS: BSE()`**
    -     import bsescraper
          bs = bsescraper.BSE()
          bs.function()
