@@ -1,7 +1,7 @@
 ### BSE Scraper Documentation
 
 
-**Version:** 1.0.5  
+**Version:** 1.0.6  
 **Description:** A Python library to scrape data from the BSE India website
 #### Get Started
 
