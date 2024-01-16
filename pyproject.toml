@@ -1,6 +1,6 @@
 [project]
 name = "bsescraper"
-version = "1.0.5"
+version = "1.0.6"
 authors = [
   { name="Vedant Joshi", email="vedant.joshi10may@gmail.com" },
 ]

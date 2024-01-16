@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import datetime
 headers ={
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)'
                     ' Chrome/87.0.4280.66 Safari/537.36',
@@ -12,7 +13,7 @@ headers ={
     }
 class BSE():
     def __init__(self):
-        self.version="1.0.5"
+        self.version="1.0.6"
         self.description="A Python library to scrape data from BSE India website"
         self.functions=["get_corporate_ann","GainerLoserDataMarket","GainerLoserDataGroup","get_index","get_stock_data","get_code","top_turnovers","dataframe","save"]
     
@@ -168,55 +169,72 @@ class BSE():
         except Exception as e:
             print("Error: "+str(e))
             print("THE BSE WEBSITE MIGHT BE DOWN")
-
-    def get_stock_data(self,code,startdate,enddate):
+    def get_stock_data(self, code, startdate, enddate):
         try:
-            startdate = str(startdate)
-            enddate = str(enddate)
-            sdd=startdate[0:2]
-            smm=startdate[3:5]
-            syyyy=startdate[6:10]
-            edd = enddate[0:2]
-            emm = enddate[3:5]
-            eyyyy = enddate[6:10]
-            url = f"https://api.bseindia.com/BseIndiaAPI/api/StockpricesearchData/w?MonthDate={sdd}%2F{smm}%2F{syyyy}&Scode={str(code)}&YearDate={edd}%2F{emm}%2F{eyyyy}&pageType=0&rbType=D"
-            req = requests.get(url,headers=headers)
-            length = len(req.json()['StockData'])
+            startdate = datetime.datetime.strptime(startdate, "%d/%m/%Y")
+            enddate = datetime.datetime.strptime(enddate, "%d/%m/%Y")
+
             stock = []
-            for i in range(length):
-                temp={}
-                dates = req.json()['StockData'][i]['Dates']
-                temp['Date'] = dates
-                qe_open = req.json()['StockData'][i]['qe_open']
-                temp['Open'] = qe_open
-                qe_high = req.json()['StockData'][i]['qe_high']
-                temp['High'] = qe_high
-                qe_low = req.json()['StockData'][i]['qe_low']
-                temp['Low'] = qe_low
-                qe_close = req.json()['StockData'][i]['qe_close']
-                temp['Close'] = qe_close
-                weighted_price = req.json()['StockData'][i]['WeightedPrice']
-                temp['Weighted Price'] = weighted_price
-                no_of_shrs = req.json()['StockData'][i]['no_of_shrs']
-                temp['Number of Shares'] = no_of_shrs
-                no_trades = req.json()['StockData'][i]['no_trades']
-                temp['Number of Trades'] = no_trades
-                net_turnov = req.json()['StockData'][i]['net_turnov']
-                temp['Net Turnover'] = net_turnov
-                delivery_qty = req.json()['StockData'][i]['Delivery_Qty']
-                temp['Delivery Quantity'] = delivery_qty
-                perc_del_qty = req.json()['StockData'][i]['Perc_Del_Qty']
-                temp['Percentage Delivery Quantity'] = perc_del_qty
-                spread_high_low = req.json()['StockData'][i]['SpreadHighLow']
-                temp['Spread High-Low'] = spread_high_low
-                spread_open_close = req.json()['StockData'][i]['SpreadOpenClose']
-                temp['Spread Open-Close'] = spread_open_close
-                stock.append(temp)
+
+            while startdate <= enddate:
+                # Calculate the end date for the current 26-day period
+                period_end_date = startdate + datetime.timedelta(days=25)
+                if period_end_date > enddate:
+                    period_end_date = enddate
+
+                # Format start and end dates for the API request
+                start_date_str = startdate.strftime("%d/%m/%Y")
+                end_date_str = period_end_date.strftime("%d/%m/%Y")
+                sdd = start_date_str[0:2]
+                smm = start_date_str[3:5]
+                syyyy = start_date_str[6:10]
+                edd = end_date_str[0:2]
+                emm = end_date_str[3:5]
+                eyyyy = end_date_str[6:10]
+                # Make API request for the current 26-day period
+                url = f"https://api.bseindia.com/BseIndiaAPI/api/StockpricesearchData/w?MonthDate={sdd}%2F{smm}%2F{syyyy}&Scode={str(code)}&YearDate={edd}%2F{emm}%2F{eyyyy}&pageType=0&rbType=D"
+                req = requests.get(url, headers=headers)
+
+                # Process the response and append data to the stock list
+                length = len(req.json()['StockData'])
+                for i in range(length):
+                    temp = {}
+                    dates = req.json()['StockData'][i]['Dates']
+                    temp['Date'] = dates
+                    qe_open = req.json()['StockData'][i]['qe_open']
+                    temp['Open'] = qe_open
+                    qe_high = req.json()['StockData'][i]['qe_high']
+                    temp['High'] = qe_high
+                    qe_low = req.json()['StockData'][i]['qe_low']
+                    temp['Low'] = qe_low
+                    qe_close = req.json()['StockData'][i]['qe_close']
+                    temp['Close'] = qe_close
+                    weighted_price = req.json()['StockData'][i]['WeightedPrice']
+                    temp['Weighted Price'] = weighted_price
+                    no_of_shrs = req.json()['StockData'][i]['no_of_shrs']
+                    temp['Number of Shares'] = no_of_shrs
+                    no_trades = req.json()['StockData'][i]['no_trades']
+                    temp['Number of Trades'] = no_trades
+                    net_turnov = req.json()['StockData'][i]['net_turnov']
+                    temp['Net Turnover'] = net_turnov
+                    delivery_qty = req.json()['StockData'][i]['Delivery_Qty']
+                    temp['Delivery Quantity'] = delivery_qty
+                    perc_del_qty = req.json()['StockData'][i]['Perc_Del_Qty']
+                    temp['Percentage Delivery Quantity'] = perc_del_qty
+                    spread_high_low = req.json()['StockData'][i]['SpreadHighLow']
+                    temp['Spread High-Low'] = spread_high_low
+                    spread_open_close = req.json()['StockData'][i]['SpreadOpenClose']
+                    temp['Spread Open-Close'] = spread_open_close
+                    stock.append(temp)
+
+                # Move to the next 26-day period
+                startdate = period_end_date + datetime.timedelta(days=1)
+
             return stock
+
         except Exception as e:
-            print("Error: "+str(e))
+            print("Error: " + str(e))
             print("THE BSE WEBSITE MIGHT BE DOWN")
-            
 
     def get_code(self,name):
         try:

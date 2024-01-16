@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: bsescraper
-Version: 1.0.5
+Version: 1.0.6
 Summary: A python module to scrape the BSE INDIA website for all stock related data.
 Author-email: Vedant Joshi <vedant.joshi10may@gmail.com>
 Classifier: Programming Language :: Python :: 3
@@ -14,7 +14,7 @@ License-File: LICENSE
 
 ### BSE Scraper Documentation
 
-**Version:** 1.0.5  
+**Version:** 1.0.6  
 **Description:** A Python library to scrape data from the BSE India website
 #### Get Started
 
